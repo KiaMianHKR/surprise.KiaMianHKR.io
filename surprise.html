@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Be My Valentine</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #ffc6e5;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .container {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Envelope base */
+    .envelope {
+      position: relative;
+      width: 260px;
+      height: 180px;
+      background: #ffe4f2;
+      border-radius: 8px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      overflow: hidden;
+      transform-style: preserve-3d;
+      transition: transform 0.6s ease;
+    }
+
+    /* Bottom inner triangle (flaps) */
+    .envelope::before,
+    .envelope::after {
+      content: "";
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      left: 0;
+    }
+
+    /* Bottom triangles */
+    .envelope::before {
+      bottom: -50%;
+      background: linear-gradient(
+        to top right,
+        #ffc6e5 50%,
+        #ffe4f2 50%
+      );
+    }
+
+    .envelope::after {
+      bottom: -50%;
+      background: linear-gradient(
+        to top left,
+        #ffc6e5 50%,
+        #ffe4f2 50%
+      );
+      mix-blend-mode: multiply;
+    }
+
+    /* Top flap */
+    .flap {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      background: linear-gradient(
+        to bottom,
+        #ffc6e5,
+        #ffe4f2
+      );
+      clip-path: polygon(0 0, 100% 0, 50% 55%);
+      transform-origin: top center;
+      transition: transform 0.6s ease;
+      z-index: 3;
+    }
+
+.heart {
+  position: absolute;
+  top: 55%;
+  left: 50%;
+  width: 40px;
+  height: 40px;
+  background: #ff4b7d;
+  transform: translate(-50%, -50%) rotate(-45deg);
+  cursor: pointer;
+  z-index: 4;
+  transition: transform 0.25s ease;
+}
+
+.heart::before,
+.heart::after {
+  content: "";
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  background: #ff4b7d;
+  border-radius: 50%;
+}
+
+.heart::before {
+  top: -20px;
+  left: 0;
+}
+
+.heart::after {
+  left: 20px;
+  top: 0;
+}
+
+.heart:hover {
+  transform: translate(-50%, -50%) rotate(-45deg) scale(1.1);
+}
+
+
+    /* Note */
+    .note {
+      position: absolute;
+      width: 90%;
+      height: 70%;
+      background: #fff;
+      top: 65%;
+      left: 50%;
+      transform: translate(-50%, -10%);
+      border-radius: 6px;
+      padding: 16px;
+      text-align: center;
+      line-height: 1.4;
+      font-size: 16px;
+      opacity: 0;
+      pointer-events: none;
+      transition: transform 0.6s ease, opacity 0.6s ease;
+      z-index: 2;
+    }
+
+    .note h1 {
+      font-size: 18px;
+      margin-bottom: 18px;
+      color: #e22b5c;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 8px 18px;
+      border-radius: 999px;
+      border: none;
+      font-size: 14px;
+      cursor: pointer;
+      background: #ff4b7d;
+      color: #fff;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
+      background: #ff2f6c;
+    }
+
+    .btn-no {
+      background: #ffd1e5;
+      color: #b03060;
+    }
+
+    .btn-no:hover {
+      background: #ffc3dd;
+    }
+
+    /* State when opened */
+    .envelope.open .flap {
+      transform: rotateX(-160deg);
+    }
+
+    .envelope.open .note {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translate(-50%, -60%);
+    }
+
+    .envelope.open .heart {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* Cute "Yes!" message */
+    .answer-message {
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translate(-50%, 20px);
+      font-size: 18px;
+      color: #e22b5c;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease, transform 0.4s ease;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .answer-message.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="envelope" id="envelope">
+      <div class="flap"></div>
+      <div class="heart" id="heart"></div>
+
+      <div class="note" id="note">
+        <h1>Hey mami, do you want to be my valentine? 💌</h1>
+        <div class="buttons">
+          <button class="btn btn-yes" id="yesBtn">Yes</button>
+          <button class="btn btn-no" id="noBtn">No</button>
+        </div>
+      </div>
+    </div>
+    <div class="answer-message" id="answerMsg">
+      Yay! You are my valeeeeentine now. 💖
+    </div>
+  </div>
+
+  <script>
+    const heart = document.getElementById("heart");
+    const envelope = document.getElementById("envelope");
+    const yesBtn = document.getElementById("yesBtn");
+    const noBtn = document.getElementById("noBtn");
+    const answerMsg = document.getElementById("answerMsg");
+
+    // Open envelope on heart click
+    heart.addEventListener("click", () => {
+      envelope.classList.add("open");
+    });
+
+    // "Yes" button response
+    yesBtn.addEventListener("click", () => {
+      answerMsg.classList.add("show");
+    });
+
+    // "No" button playfully dodges the cursor
+    noBtn.addEventListener("mouseenter", () => {
+      const container = document.querySelector(".container");
+      const rect = container.getBoundingClientRect();
+
+      const maxX = rect.width - noBtn.offsetWidth;
+      const maxY = rect.height - noBtn.offsetHeight;
+
+      // Random new position within the container
+      const newX = Math.random() * maxX;
+      const newY = Math.random() * maxY;
+
+      noBtn.style.position = "absolute";
+      noBtn.style.left = newX + "px";
+      noBtn.style.top = newY + "px";
+    });
+
+    // Prevent click on "No"
+    noBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+    });
+  </script>
+</body>
+</html>
